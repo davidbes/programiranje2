@@ -10,19 +10,21 @@ public class DN08 {
     private static final char[] visinskiZnaki = { ' ', '.', ':', '-', '=', '+', '*', '#', '%', '@' };
     public static final int[][] smeri = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } }; // S V J Z
 
+    /**
+     * Main metoda, ki bo izvedla različne metode glede na prejete argumenta.
+     * 
+     * @param args argumenti, ki so podani ob funkcijo. Prvi argument določa vrsto
+     *             operaicje, ki se bo izvedla. Glede na operacijo sledi še od 1-4
+     *             dodatnih argumentov, ki so potrebni za delovanje operacije.
+     */
     public static void main(String[] args) {
-
         Locale.setDefault(Locale.ITALY); // Da uporabimo podobno lokalnost, ki jo uporablja Slovenija.
         if (args.length >= 1) {
             switch (args[0]) {
             case "analiza":
                 if (args.length == 2) {
-                    String fileName = args[1];
-
-                    int[][] teren = preberiTeren(fileName);
+                    int[][] teren = preberiTeren(args[1]);
                     int[] visine = prestejVisine(teren);
-
-                    // Output
                     izrisTerena(teren);
                     for (int i = 0; i < visine.length; i++) {
                         System.out.printf("Visina %d: %dx\n", i, visine[i]);
@@ -33,8 +35,7 @@ public class DN08 {
             case "izrisi_poplavo":
                 if (args.length == 4) {
                     String tipPoplave = args[1];
-                    String datotekaTerena = args[2];
-                    int[][] teren = preberiTeren(datotekaTerena);
+                    int[][] teren = preberiTeren(args[2]);
                     double velikostPoplave = Double.parseDouble(args[3]);
                     izrisiPoplavo(teren, poplavljenTeren(teren, tipPoplave, velikostPoplave));
                 }
@@ -42,10 +43,8 @@ public class DN08 {
             case "porocilo_skode":
                 if (args.length == 5) {
                     String tipPoplave = args[1];
-                    String datotekaTerena = args[2];
-                    String datotekaParcel = args[3];
-                    int[][] teren = preberiTeren(datotekaTerena);
-                    int[][] tipParcele = preberiTipParcel(datotekaParcel);
+                    int[][] teren = preberiTeren(args[2]);
+                    int[][] tipParcele = preberiTipParcel(args[3]);
                     double velikostPoplave = Double.parseDouble(args[4]);
                     porociloSkode(teren, tipParcele, poplavljenTeren(teren, tipPoplave, velikostPoplave));
                 }
@@ -53,10 +52,8 @@ public class DN08 {
             case "nacrt_pobega":
                 if (args.length == 5) {
                     String tipPoplave = args[1];
-                    String datotekaTerena = args[2];
-                    String datotekaParcel = args[3];
-                    int[][] teren = preberiTeren(datotekaTerena);
-                    int[][] tipParcele = preberiTipParcel(datotekaParcel);
+                    int[][] teren = preberiTeren(args[2]);
+                    int[][] tipParcele = preberiTipParcel(args[3]);
                     double velikostPoplave = Double.parseDouble(args[4]);
                     nacrtPobega(teren, tipParcele, poplavljenTeren(teren, tipPoplave, velikostPoplave));
                 }
@@ -66,6 +63,18 @@ public class DN08 {
         }
     }
 
+    /**
+     * Metoda izvede funkcijo in vrne tabelo poplavljenega terena glede na tip
+     * poplave.
+     * 
+     * @param teren           - teren, ki ga bo poplavilo
+     * @param tipPoplave      - izbira izmed dveh poplav - kolicinska in visinska
+     * @param velikostPoplave - če je kolicinska je to število poplavljenih območij,
+     *                        če je visinka je določena velikost poplave. Vse kar je
+     *                        pod visino je poplavljeno
+     * @return tabela, ki za vsakoo koordiinato terena vrne boolean vrednost ali je
+     *         poplavljeno ali ne.
+     */
     public static boolean[][] poplavljenTeren(int[][] teren, String tipPoplave, double velikostPoplave) {
         switch (tipPoplave) {
         case "visinska":
@@ -77,17 +86,20 @@ public class DN08 {
         }
     }
 
+    /**
+     * Prebere datoteko in jo shrani v 2d tabelo
+     * 
+     * @param datoteka - predpogoj je to da ima prva vrstica 2 vrednosti - heii
+     * @return
+     */
     public static int[][] preberiTeren(String datoteka) {
         int[][] teren = new int[0][0];
-        int height;
-        int width;
         try {
             Scanner sc = new Scanner(new File(datoteka));
 
-            height = sc.nextInt();
-            width = sc.nextInt();
+            int height = sc.nextInt();
+            int width = sc.nextInt();
             teren = new int[height][width];
-
             int i = 0, j = 0;
             while (sc.hasNext()) {
                 teren[j][i++] = sc.nextInt();
@@ -104,6 +116,37 @@ public class DN08 {
         }
 
         return teren;
+    }
+
+    public static int[][] preberiTipParcel(String datoteka) {
+        int[][] tipParcele = new int[0][0];
+        try {
+            Scanner sc = new Scanner(new File(datoteka));
+
+            int height = Integer.parseInt(sc.next());
+            int width = Integer.parseInt(sc.next());
+            tipParcele = new int[height][width];
+            sc.nextLine(); // Dokonca preberi prvo vrstico.
+            int idx = 0;
+            while (sc.hasNextLine()) {
+                char[] znakci = sc.nextLine().toCharArray();
+                int[] stevila = new int[height];
+                for (int i = 0; i < stevila.length; i++) {
+                    for (int j = 0; j < tipiParcel.length; j++) {
+                        if (tipiParcel[j].startsWith(Character.toString(znakci[i]))) {
+                            stevila[i] = j;
+                        }
+                    }
+                }
+                tipParcele[idx++] = stevila;
+            }
+            sc.close();
+        } catch (Exception e) {
+            System.out.println("Napaka pri branju datoteke!");
+            System.exit(0);
+        }
+
+        return tipParcele;
     }
 
     public static void izrisTerena(int[][] teren) {
@@ -132,41 +175,6 @@ public class DN08 {
             }
         }
         return visine;
-    }
-
-    public static int[][] preberiTipParcel(String datoteka) {
-        int[][] tipParcele = new int[0][0];
-        int height;
-        int width;
-        try {
-            Scanner sc = new Scanner(new File(datoteka));
-
-            height = Integer.parseInt(sc.next());
-            width = Integer.parseInt(sc.next());
-            tipParcele = new int[height][width];
-
-            sc.nextLine(); // Dokonca preberi prvo vrstico.
-
-            int idx = 0;
-            while (sc.hasNextLine()) {
-                char[] znakci = sc.nextLine().toCharArray();
-                int[] stevila = new int[height];
-                for (int i = 0; i < stevila.length; i++) {
-                    for (int j = 0; j < tipiParcel.length; j++) {
-                        if (tipiParcel[j].startsWith(Character.toString(znakci[i]))) {
-                            stevila[i] = j;
-                        }
-                    }
-                }
-                tipParcele[idx++] = stevila;
-            }
-            sc.close();
-        } catch (Exception e) {
-            System.out.println("Napaka pri branju datoteke!" + e);
-            System.exit(0);
-        }
-
-        return tipParcele;
     }
 
     public static boolean[][] visinskaPoplava(int[][] teren, double visinaPoplave) {
@@ -237,8 +245,7 @@ public class DN08 {
 
     public static boolean lahkoPobegne(int[][] teren, boolean[][] poplava, int x, int y) {
         int pozX = x, pozY = y;
-        int[] sosednjeVisine = new int[smeri.length];
-        for (int i = 0; i < sosednjeVisine.length; i++) {
+        for (int i = 0; i < smeri.length; i++) {
             int tempX = x + smeri[i][0];
             int tempY = y + smeri[i][1];
             try {
