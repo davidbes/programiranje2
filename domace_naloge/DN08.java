@@ -21,43 +21,43 @@ public class DN08 {
         Locale.setDefault(Locale.ITALY); // Da uporabimo podobno lokalnost, ki jo uporablja Slovenija.
         if (args.length >= 1) {
             switch (args[0]) {
-            case "analiza":
-                if (args.length == 2) {
-                    int[][] teren = preberiTeren(args[1]);
-                    int[] visine = prestejVisine(teren);
-                    izrisTerena(teren);
-                    for (int i = 0; i < visine.length; i++) {
-                        System.out.printf("Visina %d: %dx\n", i, visine[i]);
+                case "analiza":
+                    if (args.length == 2) {
+                        int[][] teren = preberiTeren(args[1]);
+                        int[] visine = prestejVisine(teren);
+                        izrisTerena(teren);
+                        for (int i = 0; i < visine.length; i++) {
+                            System.out.printf("Visina %d: %dx\n", i, visine[i]);
+                        }
+                        System.out.printf("Povprecna visina: %.2f\n", povprecnaVisina(teren));
                     }
-                    System.out.printf("Povprecna visina: %.2f\n", povprecnaVisina(teren));
-                }
-                break;
-            case "izrisi_poplavo":
-                if (args.length == 4) {
-                    String tipPoplave = args[1];
-                    int[][] teren = preberiTeren(args[2]);
-                    double velikostPoplave = Double.parseDouble(args[3]);
-                    izrisiPoplavo(teren, poplavljenTeren(teren, tipPoplave, velikostPoplave));
-                }
-                break;
-            case "porocilo_skode":
-                if (args.length == 5) {
-                    String tipPoplave = args[1];
-                    int[][] teren = preberiTeren(args[2]);
-                    int[][] tipParcele = preberiTipParcel(args[3]);
-                    double velikostPoplave = Double.parseDouble(args[4]);
-                    porociloSkode(teren, tipParcele, poplavljenTeren(teren, tipPoplave, velikostPoplave));
-                }
-                break;
-            case "nacrt_pobega":
-                if (args.length == 5) {
-                    String tipPoplave = args[1];
-                    int[][] teren = preberiTeren(args[2]);
-                    int[][] tipParcele = preberiTipParcel(args[3]);
-                    double velikostPoplave = Double.parseDouble(args[4]);
-                    nacrtPobega(teren, tipParcele, poplavljenTeren(teren, tipPoplave, velikostPoplave));
-                }
-                break;
+                    break;
+                case "izrisi_poplavo":
+                    if (args.length == 4) {
+                        String tipPoplave = args[1];
+                        int[][] teren = preberiTeren(args[2]);
+                        double velikostPoplave = Double.parseDouble(args[3]);
+                        izrisiPoplavo(teren, poplavljenTeren(teren, tipPoplave, velikostPoplave));
+                    }
+                    break;
+                case "porocilo_skode":
+                    if (args.length == 5) {
+                        String tipPoplave = args[1];
+                        int[][] teren = preberiTeren(args[2]);
+                        int[][] tipParcele = preberiTipParcel(args[3]);
+                        double velikostPoplave = Double.parseDouble(args[4]);
+                        porociloSkode(teren, tipParcele, poplavljenTeren(teren, tipPoplave, velikostPoplave));
+                    }
+                    break;
+                case "nacrt_pobega":
+                    if (args.length == 5) {
+                        String tipPoplave = args[1];
+                        int[][] teren = preberiTeren(args[2]);
+                        int[][] tipParcele = preberiTipParcel(args[3]);
+                        double velikostPoplave = Double.parseDouble(args[4]);
+                        nacrtPobega(teren, tipParcele, poplavljenTeren(teren, tipPoplave, velikostPoplave));
+                    }
+                    break;
             }
 
         }
@@ -77,12 +77,12 @@ public class DN08 {
      */
     public static boolean[][] poplavljenTeren(int[][] teren, String tipPoplave, double velikostPoplave) {
         switch (tipPoplave) {
-        case "visinska":
-            return visinskaPoplava(teren, velikostPoplave);
-        case "kolicinska":
-            return kolicinskaPoplava(teren, velikostPoplave);
-        default:
-            return visinskaPoplava(teren, velikostPoplave);
+            case "visinska":
+                return visinskaPoplava(teren, velikostPoplave);
+            case "kolicinska":
+                return kolicinskaPoplava(teren, velikostPoplave);
+            default:
+                return visinskaPoplava(teren, velikostPoplave);
         }
     }
 
@@ -194,7 +194,7 @@ public class DN08 {
             if (prekritoObmocje >= kolicina) {
                 return visinskaPoplava(teren, i);
             }
-            prekritoObmocje += prekritoObmocje + presteteVisine[i];
+            prekritoObmocje += presteteVisine[i];
         }
         return visinskaPoplava(teren, presteteVisine.length);
     }
